@@ -45,9 +45,10 @@ class MinimalPublisher(Node):
         
     def timer_callback(self):
         error_x = self.x - self.x_des
+        # error_y
          
         msg_a = Float64()
-        msg_a.data = -self.K_x*(error_x) - self.K_v*self.v
+        msg_a.data = 0.0
         self.publisher_acceleration_.publish(msg_a)
 
         # Repreat it for the steering
