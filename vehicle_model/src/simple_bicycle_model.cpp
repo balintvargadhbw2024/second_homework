@@ -13,7 +13,7 @@ public:
         velocity_pub_ = create_publisher<std_msgs::msg::Float64>("/sim_output/velocity", 10);
         x_position_pub_ = create_publisher<std_msgs::msg::Float64>("/sim_output/x_position", 10);
         y_position_pub_ = create_publisher<std_msgs::msg::Float64>("/sim_output/y_position", 10);
-        steering_pub_ = create_publisher<std_msgs::msg::Float64>("/sim_output/steering", 10);
+        
 
         // Initialize subscribers for acceleration and steering rate
         acceleration_sub_ = create_subscription<std_msgs::msg::Float64>(
@@ -22,10 +22,10 @@ public:
                 acceleration_ = msg->data;
             });
 
-        steering_rate_sub_ = create_subscription<std_msgs::msg::Float64>(
-            "/sim_input/steering_rate", 10, [this](const std_msgs::msg::Float64::SharedPtr msg) {
+        steering_sub_ = create_subscription<std_msgs::msg::Float64>(
+            "/sim_input/steering", 10, [this](const std_msgs::msg::Float64::SharedPtr msg) {
                 // Update steering rate value
-                steering_rate_ = msg->data;
+                steering_ = msg->data;
             });
 
         // Timer for simulating the bicycle model at a fixed rate
@@ -40,22 +40,22 @@ private:
     double orientation_ = 0.0; // Initial orientation
     double x_position_ = 0.0; // Initial x position
     double y_position_ = 0.0; // Initial y position
-    double steering_ = 0.0;
+    
     
     // Input values
     double acceleration_ = 0.0;
-    double steering_rate_ = 0.0;
+    double steering_ = 0.0;
 
     // Publishers
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr orientation_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr velocity_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr x_position_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr y_position_pub_; 
-    rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr steering_pub_; 
+    
 
     // Subscribers
     rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr acceleration_sub_;
-    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr steering_rate_sub_;
+    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr steering_sub_;
 
     // Timer for simulation
     rclcpp::TimerBase::SharedPtr timer_;
@@ -68,7 +68,6 @@ private:
 
         // 
         velocity_     += acceleration_ * dt;
-        steering_     += steering_rate_ * dt;
         orientation_  += (velocity_ / length) * tan(steering_) * dt;
         x_position_   += velocity_ * cos(orientation_) * dt;
         y_position_   += velocity_ * sin(orientation_) * dt;
@@ -91,9 +90,6 @@ private:
         velocity_msg->data = velocity_;
         velocity_pub_->publish(std::move(velocity_msg));
 
-        auto steering_msg = std::make_unique<std_msgs::msg::Float64>();
-        steering_msg->data = steering_;
-        steering_pub_->publish(std::move(steering_msg));
         
     }
 };

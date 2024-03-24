@@ -14,8 +14,12 @@ find_package(std_msgs REQUIRED)
 add_executable(vehicle src/bicycle_model.cpp)
 ament_target_dependencies(vehicle rclcpp std_msgs)
 
+add_executable(simple_vehicle src/simple_bicycle_model.cpp)
+ament_target_dependencies(simple_vehicle rclcpp std_msgs)
+
 install(TARGETS
   vehicle
+  simple_vehicle
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

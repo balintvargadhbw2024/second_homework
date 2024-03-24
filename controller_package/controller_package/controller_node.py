@@ -9,7 +9,7 @@ class MinimalPublisher(Node):
 
     def __init__(self):
         super().__init__('minimal_publisher')
-        self.publisher_acceleration_ = self.create_publisher(Float64, 'acceleration', 10)
+        self.publisher_acceleration_ = self.create_publisher(Float64, '/sim_input/acceleration', 10)
         timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         
@@ -33,7 +33,7 @@ class MinimalPublisher(Node):
         # Subscriber
         self.subscription_x = self.create_subscription(
             Float64,
-            'x_position',
+            '/sim_output/x_position',
             self.callback_x,
             10)
         self.subscription_x  # prevent unused variable warning
